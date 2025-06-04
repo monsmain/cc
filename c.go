@@ -1,4 +1,5 @@
 package main
+
 import (
 	"bufio"
 	"context"
@@ -69,7 +70,7 @@ func main() {
 		return
 	}
 
-	fmt.Print("Enter card expiry year (e.g. 2024): ")
+	fmt.Print("Enter card expiry year (e.g. 2026): ")
 	expYear, _ := reader.ReadString('\n')
 	expYear = strings.TrimSpace(expYear)
 	if !isValidYear(expYear) {
@@ -163,7 +164,7 @@ func main() {
 		fmt.Printf("\nDEAD: %s\nStatus: %s Declined❌\n", sk, tokenData.Message)
 	}
 	if tokenData.Card != nil {
-		fmt.Printf("Type (brand): %s\n", tokenData.Card.Brand)
+		fmt.Printf("Type Card: %s\n", tokenData.Card.Brand)
 		fmt.Printf("Country: %s\n", tokenData.Card.Country)
 		if tokenData.Card.Name != "" {
 			fmt.Printf("Name: %s\n", tokenData.Card.Name)
