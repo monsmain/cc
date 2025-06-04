@@ -115,9 +115,9 @@ func main() {
 	resp1Str := string(body1)
 	switch {
 	case strings.Contains(resp1Str, "rate_limit"):
-		fmt.Printf("\n#RATE-LIMIT : %s\nRESPONSE:  RATE LIMIT ⚠️\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\n#RATE-LIMIT : %s\nRESPONSE:  RATE LIMIT⚠️\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "tok_"):
-		fmt.Printf("\n#LIVE : %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "api_key_expired"):
 		fmt.Printf("\nDEAD : %s\nRESPONSE: API KEY REVOKED ❌\n", sk)
 	case strings.Contains(resp1Str, "Invalid API Key provided"):
@@ -125,9 +125,9 @@ func main() {
 	case strings.Contains(resp1Str, "testmode_charges_only"):
 		fmt.Printf("\nDEAD : %s\nRESPONSE: TESTMODE CHARGES ONLY ❌\n", sk)
 	case strings.Contains(resp1Str, "Your card was declined"):
-		fmt.Printf("\n#LIVE : %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	default:
-		fmt.Printf("\nDEAD: %s\nRESPONSE: %s ❌\n", sk, tokenData.Message)
+		fmt.Printf("\nDEAD: %s\nStatus: %s Declined❌\n", sk, tokenData.Message)
 	}
 
 	fmt.Println("\n--- Card Info (from Stripe) ---")
