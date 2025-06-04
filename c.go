@@ -35,7 +35,6 @@ func getTorClient() *http.Client {
 
 func main() {
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
-
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
@@ -73,7 +72,6 @@ func main() {
 	}
 	defer resp1.Body.Close()
 	body1, _ := io.ReadAll(resp1.Body)
-
 	type Card struct {
 		Brand   string `json:"brand"`
 		Country string `json:"country"`
@@ -87,6 +85,7 @@ func main() {
 	}
 	var tokenData TokenResponse
 	json.Unmarshal(body1, &tokenData)
+
 	req2, _ := http.NewRequest("GET", "https://api.stripe.com/v1/balance", nil)
 	req2.SetBasicAuth(sk, "")
 	resp2, err := client.Do(req2)
@@ -118,7 +117,7 @@ func main() {
 	case strings.Contains(resp1Str, "rate_limit"):
 		fmt.Printf("\n#RATE-LIMIT : %s\nRESPONSE:  RATE LIMIT ⚠️\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "tok_"):
-		fmt.Printf("\n %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
+		fmt.Printf("\n#LIVE : %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "api_key_expired"):
 		fmt.Printf("\nDEAD : %s\nRESPONSE: API KEY REVOKED ❌\n", sk)
 	case strings.Contains(resp1Str, "Invalid API Key provided"):
@@ -126,7 +125,7 @@ func main() {
 	case strings.Contains(resp1Str, "testmode_charges_only"):
 		fmt.Printf("\nDEAD : %s\nRESPONSE: TESTMODE CHARGES ONLY ❌\n", sk)
 	case strings.Contains(resp1Str, "Your card was declined"):
-		fmt.Printf("\n %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
+		fmt.Printf("\n#LIVE : %s\nRESPONSE: VALID LIVE SK KEY✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	default:
 		fmt.Printf("\nDEAD: %s\nRESPONSE: %s ❌\n", sk, tokenData.Message)
 	}
