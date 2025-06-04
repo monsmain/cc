@@ -6,17 +6,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
-	"regexp"
+
 	"golang.org/x/net/proxy"
 )
+
+const githubDataURL = "https://raw.githubusercontent.com/monsmain/cc/main/deta.%20JSON"
+
+var countryMap map[string]string
 
 func clearTerminal() {
 	if strings.Contains(strings.ToLower(runtime.GOOS), "windows") {
@@ -63,163 +70,66 @@ func isValidCVC(cvc string) bool {
 	return regexp.MustCompile(`^\d{3,4}$`).MatchString(cvc)
 }
 
+func downloadCountryDataIfNotExists(localFilename string) error {
+	if _, err := os.Stat(localFilename); err == nil {
+
+		return nil
+	}
+
+	resp, err := http.Get(githubDataURL)
+	if err != nil {
+		return fmt.Errorf("failed to download data from GitHub: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("failed to download data from GitHub: status %v", resp.Status)
+	}
+	file, err := os.Create(localFilename)
+	if err != nil {
+		return fmt.Errorf("failed to create local file: %v", err)
+	}
+	defer file.Close()
+	_, err = io.Copy(file, resp.Body)
+	return err
+}
+
+func loadCountryMap(filename string) map[string]string {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("Could not open country data file: %v", err)
+	}
+	defer file.Close()
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Could not read country data file: %v", err)
+	}
+
+	var countries map[string]string
+	if err := json.Unmarshal(bytes, &countries); err != nil {
+		log.Fatalf("Could not parse country data: %v", err)
+	}
+	return countries
+}
+
 func countryName(code string) string {
-    countries := map[string]string{
-        "US": "United States",
-        "MY": "Malaysia",
-        "CA": "Canada",
-        "IR": "Iran",
-        "RU": "Russia",
-
-        "AL": "Albania",
-        "DE": "Germany",
-    "AD": "Andorra",
-    "AT": "Austria",
-    "ES": "Spain",
-    "EE": "Estonia",
-    "SK": "Slovakia",
-    "SI": "Slovenia",
-    "UA": "Ukraine",
-    "IT": "Italy",
-    "IE": "Ireland",
-    "IS": "Iceland",
-    "GB": "United Kingdom",
-    "BE": "Belgium",
-    "BG": "Bulgaria",
-    "BA": "Bosnia and Herzegovina",
-    "PT": "Portugal",
-    "CZ": "Czech Republic",
-    "DK": "Denmark",
-    "RO": "Romania",
-    "SM": "San Marino",
-    "SE": "Sweden",
-    "CH": "Switzerland",
-    "RS": "Serbia",
-    "FR": "France",
-    "FI": "Finland",
-    "CY": "Cyprus",
-    "HR": "Croatia",
-    "LV": "Latvia",
-    "LU": "Luxembourg",
-    "PL": "Poland",
-    "LT": "Lithuania",
-    "LI": "Liechtenstein",
-    "MT": "Malta",
-    "HU": "Hungary",
-    "MK": "North Macedonia",
-    "MD": "Moldova",
-    "MC": "Monaco",
-    "ME": "Montenegro",
-    "NO": "Norway",
-    "NL": "Netherlands",
-    "GR": "Greece",
-    "BY": "Belarus",
-    "GE": "Georgia",
-    "AM": "Armenia",
-    "AZ": "Azerbaijan",
-    "RU": "Russia",
-    "VA": "Vatican City",
-    "GI": "Gibraltar",
-    "JP": "Japan",
-    "KR": "South Korea",
-    "SG": "Singapore",
-    "HK": "Hong Kong",
-    "MY": "Malaysia",
-    "TH": "Thailand",
-    "AE": "United Arab Emirates",
-    "SA": "Saudi Arabia",
-    "QA": "Qatar",
-    "KW": "Kuwait",
-    "BH": "Bahrain",
-    "OM": "Oman",
-    "TR": "Turkey",
-    "IN": "India",
-    "KZ": "Kazakhstan",
-    "SY": "Syria",
-    "MM": "Myanmar",
-    "IL": "Israel",
-    "TW": "Taiwan",
-    "ID": "Indonesia",
-    "PH": "Philippines",
-    "VN": "Vietnam",
-    "PK": "Pakistan",
-    "BD": "Bangladesh",
-    "UZ": "Uzbekistan",
-    "TM": "Turkmenistan",
-    "KG": "Kyrgyzstan",
-    "TJ": "Tajikistan",
-    "MN": "Mongolia",
-    "LB": "Lebanon",
-    "JO": "Jordan",
-    "IQ": "Iraq",
-    "IR": "Iran",
-    "ZA": "South Africa",
-    "EG": "Egypt",
-    "MA": "Morocco",
-    "NG": "Nigeria",
-    "KE": "Kenya",
-    "SD": "Sudan",
-    "LY": "Libya",
-    "ZW": "Zimbabwe",
-    "DZ": "Algeria",
-    "TN": "Tunisia",
-    "GH": "Ghana",
-    "SN": "Senegal",
-    "TZ": "Tanzania",
-    "ET": "Ethiopia",
-    "UG": "Uganda",
-    "CM": "Cameroon",
-    "CI": "Ivory Coast",
-    "RW": "Rwanda",
-    "AO": "Angola",
-    "US": "United States",
-    "CA": "Canada",
-    "BR": "Brazil",
-    "AR": "Argentina",
-    "CL": "Chile",
-    "CO": "Colombia",
-    "PE": "Peru",
-    "CU": "Cuba",
-    "VE": "Venezuela",
-    "MX": "Mexico",
-    "JM": "Jamaica",
-    "CR": "Costa Rica",
-    "DO": "Dominican Republic",
-    "PA": "Panama",
-    "EC": "Ecuador",
-    "BO": "Bolivia",
-    "PY": "Paraguay",
-    "UY": "Uruguay",
-    "GT": "Guatemala",
-    "SV": "El Salvador",
-    "HN": "Honduras",
-    "NI": "Nicaragua",
-    "HT": "Haiti",
-    "BS": "Bahamas",
-    "AU": "Australia",
-    "NZ": "New Zealand",
-    "PG": "Papua New Guinea",
-    "FJ": "Fiji",
-    "SB": "Solomon Islands",
-    "VU": "Vanuatu",
-    "WS": "Samoa",
-    "TO": "Tonga",
-    "FM": "Micronesia",
-    "MH": "Marshall Islands",
-    "TV": "Tuvalu"
-
-    }
-    if name, ok := countries[code]; ok {
-        return name
-    }
-    return code
+	if name, ok := countryMap[code]; ok {
+		return name
+	}
+	return code
 }
 
 func main() {
+	err := downloadCountryDataIfNotExists("data.JSON")
+	if err != nil {
+		log.Fatalf("Could not prepare country data file: %v", err)
+	}
+	countryMap = loadCountryMap("data.JSON")
+
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
 
 	reader := bufio.NewReader(os.Stdin)
-        fmt.Print("\033[H\033[2J")
+	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
 	cardNumber, _ := reader.ReadString('\n')
 	cardNumber = strings.TrimSpace(cardNumber)
