@@ -34,7 +34,7 @@ func getTorClient() *http.Client {
 }
 
 func main() {
-	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
+	sk := "sk_live_ENpCAEI7OOkqeDauRnZvxTpX"
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
