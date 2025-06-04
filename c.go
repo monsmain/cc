@@ -183,7 +183,7 @@ func main() {
 		if tokenData.Card.Name != "" {
 			fmt.Printf("Name: %s\n", tokenData.Card.Name)
 		} else {
-			fmt.Println("Name: (monsmain)")
+			fmt.Println("Name: monsmain")
 		}
 	} else {
 		fmt.Println("Card info not available (token creation failed or invalid card).")
