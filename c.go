@@ -63,9 +63,24 @@ func isValidCVC(cvc string) bool {
 	return regexp.MustCompile(`^\d{3,4}$`).MatchString(cvc)
 }
 
+func countryName(code string) string {
+    countries := map[string]string{
+        "US": "United States",
+        "MY": "Malaysia",
+        "CA": "Canada",
+        "IR": "Iran",
+        "RU": "Russia",
+
+    }Add commentMore actions
+    if name, ok := countries[code]; ok {
+        return name
+    }
+    return code
+}
+
 func main() {
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
-    countryMap = loadCountryMap("data.JSON")
+
 	reader := bufio.NewReader(os.Stdin)
         fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
