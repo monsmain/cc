@@ -118,7 +118,9 @@ func main() {
 		log.Fatalf("Could not prepare country data file: %v", err)
 	}
 	countryMap = loadCountryMap("data.JSON")
-	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
+
+	sk := "pk_test_TYooMQauvdEDq54NiTphI7jx"
+
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
