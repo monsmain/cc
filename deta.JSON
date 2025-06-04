@@ -1,4 +1,5 @@
-{   "AL": "Albania",
+{
+    "AL": "Albania",
     "DE": "Germany",
     "AD": "Andorra",
     "AT": "Austria",
@@ -133,4 +134,5 @@
     "TO": "Tonga",
     "FM": "Micronesia",
     "MH": "Marshall Islands",
-    "TV": "Tuvalu"  }
+    "TV": "Tuvalu"
+}
