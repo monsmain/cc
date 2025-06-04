@@ -201,7 +201,6 @@ func countryName(code string) string {
     "FM": "Micronesia",
     "MH": "Marshall Islands",
     "TV": "Tuvalu"
-    }
     if name, ok := countries[code]; ok {
         return name
     }
