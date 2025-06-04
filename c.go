@@ -18,13 +18,12 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-func clearScreen() {
-	switch runtime.GOOS {
-	case "windows":
+func clearTerminal() {
+	if strings.Contains(strings.ToLower(runtime.GOOS), "windows") {
 		cmd := exec.Command("cmd", "/c", "cls")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
-	default:
+	} else {
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
