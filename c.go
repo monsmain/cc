@@ -239,6 +239,9 @@ func main() {
 	default:
 		fmt.Printf("\nDEAD\nStatus: %s Declined❌\n", tokenData.Message)
 	}
+
+fmt.Println(string(body1))
+
 	if tokenData.Card != nil {
 		fmt.Printf("Type Card: %s\n", tokenData.Card.Brand)
 		fmt.Printf("Country: %s\n", countryName(tokenData.Card.Country))
