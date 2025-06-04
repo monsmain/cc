@@ -71,7 +71,7 @@ func countryName(code string) string {
         "IR": "Iran",
         "RU": "Russia",
 
-    }Add commentMore actions
+    }
     if name, ok := countries[code]; ok {
         return name
     }
