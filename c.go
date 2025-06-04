@@ -15,6 +15,8 @@ import (
 	"strings"
 	"time"
 	"regexp"
+        "io/ioutil"
+        "log"
 	"golang.org/x/net/proxy"
 )
 
