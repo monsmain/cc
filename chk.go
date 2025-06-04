@@ -1,3 +1,5 @@
+// check key stripe
+
 package main
 
 import (
