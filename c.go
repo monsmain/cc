@@ -67,7 +67,7 @@ func main() {
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
 
 	reader := bufio.NewReader(os.Stdin)
-
+        fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
 	cardNumber, _ := reader.ReadString('\n')
 	cardNumber = strings.TrimSpace(cardNumber)
