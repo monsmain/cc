@@ -114,7 +114,6 @@ func countryName(code string) string {
 	return code
 }
 
-
 func getRandomLiveKey(filename string) (string, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -140,10 +139,11 @@ func main() {
 
 	sk, err := getRandomLiveKey("keys.txt")
 	if err != nil {
-		fmt.Printf("خطا در خواندن کلید: %v\n", err)
+		fmt.Printf("Error reading key: %v\n", err)
 		return
 	}
-	
+	fmt.Println("Selected key:", sk)
+
         reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
