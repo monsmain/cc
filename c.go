@@ -193,7 +193,7 @@ func main() {
 	}
 	if tokenData.Card != nil {
 		fmt.Printf("Type Card: %s\n", tokenData.Card.Brand)
-		fmt.Printf("Country: %s\n", tokenData.Card.Country)
+		fmt.Printf("Country: %s\n", countryName(tokenData.Card.Country))
 		if tokenData.Card.Name != "" {
 			fmt.Printf("Name: %s\n", tokenData.Card.Name)
 		} else {
