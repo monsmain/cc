@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 	"time"
+
 	"golang.org/x/net/proxy"
 )
 
@@ -73,14 +74,20 @@ func main() {
 	cvc, _ := reader.ReadString('\n')
 	cvc = strings.TrimSpace(cvc)
 
-	client := getTorClient()
+	fmt.Print("Enter card type (e.g. Visa, MasterCard, Amex): ")
+	cardType, _ := reader.ReadString('\n')
+	cardType = strings.TrimSpace(cardType)
 
+	fmt.Print("Enter country code (e.g. IR, US, SE): ")
+	country, _ := reader.ReadString('\n')
+	country = strings.TrimSpace(country)
+
+	client := getTorClient()
 	data := url.Values{}
 	data.Set("card[number]", cardNumber)
 	data.Set("card[exp_month]", expMonth)
 	data.Set("card[exp_year]", expYear)
 	data.Set("card[cvc]", cvc)
-
 	req1, _ := http.NewRequest("POST", "https://api.stripe.com/v1/tokens", strings.NewReader(data.Encode()))
 	req1.Header.Add("Authorization", "Bearer "+sk)
 	req1.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -138,4 +145,11 @@ func main() {
 	default:
 		fmt.Printf("\nDEAD: %s\nRESPONSE: %s ❌\n", sk, msg)
 	}
+
+	fmt.Println("\n--- Card Details ---")
+	fmt.Printf("Card Number: %s\n", cardNumber)
+	fmt.Printf("Expiry: %s/%s\n", expMonth, expYear)
+	fmt.Printf("CVC: %s\n", cvc)
+	fmt.Printf("Card Type: %s\n", cardType)
+	fmt.Printf("Country: %s\n", country)
 }
