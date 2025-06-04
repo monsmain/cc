@@ -70,6 +70,7 @@ func countryName(code string) string {
         "CA": "Canada",
         "IR": "Iran",
         "RU": "Russia",
+
     }
     if name, ok := countries[code]; ok {
         return name
