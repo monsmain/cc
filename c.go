@@ -224,32 +224,31 @@ func main() {
 	resp1Str := string(body1)
 	switch {
 	case strings.Contains(resp1Str, "rate_limit"):
-		fmt.Printf("\n#RATE-LIMIT\nRESPONSE:  RATE LIMIT⚠️\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
+		fmt.Printf("\n#RATE-LIMIT : %s\nRESPONSE:  RATE LIMIT⚠️\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "tok_"):
-		fmt.Printf("\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
+		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	case strings.Contains(resp1Str, "api_key_expired"):
-		fmt.Printf("\nDEAD\nRESPONSE: API KEY REVOKED ❌\n")
+		fmt.Printf("\nDEAD : %s\nRESPONSE: API KEY REVOKED ❌\n", sk)
 	case strings.Contains(resp1Str, "Invalid API Key provided"):
-		fmt.Printf("\nDEAD\nRESPONSE: INVALID API KEY ❌\n")
+		fmt.Printf("\nDEAD : %s\nRESPONSE: INVALID API KEY ❌\n", sk)
 	case strings.Contains(resp1Str, "testmode_charges_only"):
-		fmt.Printf("\nDEAD\nRESPONSE: TESTMODE CHARGES ONLY ❌\n")
+		fmt.Printf("\nDEAD : %s\nRESPONSE: TESTMODE CHARGES ONLY ❌\n", sk)
 	case strings.Contains(resp1Str, "Your card was declined"):
-		fmt.Printf("\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
+		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
 	default:
-		fmt.Printf("\nDEAD\nStatus: %s Declined❌\n", tokenData.Message)
+		fmt.Printf("\nDEAD: %s\nStatus: %s Declined❌\n", sk, tokenData.Message)
 	}
 
-fmt.Println(string(body1))
-
+	fmt.Println("\n--- Card Info (from Stripe) ---")
 	if tokenData.Card != nil {
-		fmt.Printf("Type Card: %s\n", tokenData.Card.Brand)
-		fmt.Printf("Country: %s\n", countryName(tokenData.Card.Country))
+		fmt.Printf("Type (brand): %s\n", tokenData.Card.Brand)
+		fmt.Printf("Country: %s\n", tokenData.Card.Country)
 		if tokenData.Card.Name != "" {
 			fmt.Printf("Name: %s\n", tokenData.Card.Name)
 		} else {
-			fmt.Println("Name: monsmain")
+			fmt.Println("Name: (not provided)")
 		}
 	} else {
-		fmt.Println("Card info not available.")
+		fmt.Println("Card info not available (token creation failed or invalid card).")
 	}
 }
