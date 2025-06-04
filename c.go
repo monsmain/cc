@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -15,10 +16,11 @@ import (
 	"strings"
 	"time"
 	"regexp"
-        "io/ioutil"
-        "log"
 	"golang.org/x/net/proxy"
+	"log"
 )
+
+var countryMap map[string]string
 
 func clearTerminal() {
 	if strings.Contains(strings.ToLower(runtime.GOOS), "windows") {
@@ -64,39 +66,41 @@ func isValidYear(year string) bool {
 func isValidCVC(cvc string) bool {
 	return regexp.MustCompile(`^\d{3,4}$`).MatchString(cvc)
 }
-var countryMap map[string]string
 
 func loadCountryMap(filename string) map[string]string {
-    file, err := os.Open(filename)
-    if err != nil {
-        log.Fatalf("Could not open country data file: %v", err)
-    }
-    defer file.Close()
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("Could not open country data file: %v", err)
+	}
+	defer file.Close()
 
-    bytes, err := ioutil.ReadAll(file)
-    if err != nil {
-        log.Fatalf("Could not read country data file: %v", err)
-    }
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Could not read country data file: %v", err)
+	}
 
-    var countries map[string]string
-    if err := json.Unmarshal(bytes, &countries); err != nil {
-        log.Fatalf("Could not parse country data: %v", err)
-    }
-    return countries
+	var countries map[string]string
+	if err := json.Unmarshal(bytes, &countries); err != nil {
+		log.Fatalf("Could not parse country data: %v", err)
+	}
+	return countries
 }
 
 func countryName(code string) string {
-    if name, ok := countryMap[code]; ok {
-        return name
-    }
-    return code
+	if name, ok := countryMap[code]; ok {
+		return name
+	}
+	return code
 }
 
 func main() {
+	// لود کردن map کشورها از فایل JSON
+	countryMap = loadCountryMap("data.JSON")
+
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
 
 	reader := bufio.NewReader(os.Stdin)
-        fmt.Print("\033[H\033[2J")
+	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
 	cardNumber, _ := reader.ReadString('\n')
 	cardNumber = strings.TrimSpace(cardNumber)
