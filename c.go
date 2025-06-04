@@ -113,39 +113,10 @@ func countryName(code string) string {
 	return code
 }
 func main() {
-	err := downloadCountryDataIfNotExists("data.JSON")
-	if err != nil {
-		log.Fatalf("Could not prepare country data file: %v", err)
-	}
-	countryMap = loadCountryMap("data.JSON")
-
-	file, err := os.Open("keys.txt")
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
-	}
-	defer file.Close()
-
-	var keys []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		key := scanner.Text()
-		if key != "" {
-			keys = append(keys, key)
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading file:", err)
-		return
-	}
-
-	fmt.Println("Stripe Live Keys:")
-	for _, k := range keys {
-		fmt.Println(k)
-	}
-}
-
-	reader := bufio.NewReader(os.Stdin)
+	
+        sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
+	
+        reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
 	cardNumber, _ := reader.ReadString('\n')
