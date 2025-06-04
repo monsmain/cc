@@ -62,17 +62,29 @@ func isValidYear(year string) bool {
 func isValidCVC(cvc string) bool {
 	return regexp.MustCompile(`^\d{3,4}$`).MatchString(cvc)
 }
+var countryMap map[string]string
+
+func loadCountryMap(filename string) map[string]string {
+    file, err := os.Open(filename)
+    if err != nil {
+        log.Fatalf("Could not open country data file: %v", err)
+    }
+    defer file.Close()
+
+    bytes, err := ioutil.ReadAll(file)
+    if err != nil {
+        log.Fatalf("Could not read country data file: %v", err)
+    }
+
+    var countries map[string]string
+    if err := json.Unmarshal(bytes, &countries); err != nil {
+        log.Fatalf("Could not parse country data: %v", err)
+    }
+    return countries
+}
 
 func countryName(code string) string {
-    countries := map[string]string{
-        "US": "United States",
-        "MY": "Malaysia",
-        "CA": "Canada",
-        "IR": "Iran",
-        "RU": "Russia",
-
-    }
-    if name, ok := countries[code]; ok {
+    if name, ok := countryMap[code]; ok {
         return name
     }
     return code
