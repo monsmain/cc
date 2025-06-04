@@ -1,5 +1,4 @@
 // check key stripe
-
 package main
 
 import (
@@ -12,6 +11,8 @@ import (
 	"strings"
 	"time"
 )
+
+const keyPrefix = "sk_live_"
 
 func checkKey(key string) (string, error) {
 	client := &http.Client{
@@ -52,10 +53,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		key := strings.TrimSpace(scanner.Text())
-		if key == "" {
+		suffix := strings.TrimSpace(scanner.Text())
+		if suffix == "" {
 			continue
 		}
+		key := keyPrefix + suffix
 		fmt.Printf("Checking key: %s ... ", key)
 		result, err := checkKey(key)
 		if err != nil {
@@ -70,6 +72,7 @@ func main() {
 		case "RATE_LIMIT":
 			fmt.Println("RATE LIMITED ⏳ (waiting 60s)")
 			time.Sleep(60 * time.Second)
+			// بعد از وقفه دوباره همین کلید را چک کن
 			result, err = checkKey(key)
 			if err == nil && result == "LIVE" {
 				fmt.Println("LIVE ✅")
