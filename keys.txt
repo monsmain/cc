@@ -1,4 +1,4 @@
-
+mW8KGJIEYIKJXvjqfaiuaBdHuy 
 
 
 
@@ -8,6 +8,5 @@
 
 BQokikJOvBiI2HlWgH4olfQ2
 omFDE4PpGEioGWha5NXjoPJo
-
-pk_live_
+sk_live_
 https://github.com/adityash4rma/stripe-key-checker/blob/master/keys.txt
