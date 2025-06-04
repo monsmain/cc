@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"regexp"
 	"golang.org/x/net/proxy"
 )
 
