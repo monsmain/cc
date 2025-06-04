@@ -11,5 +11,5 @@ pk_live_omFDE4PpGEioGWha5NXjoPJo
 pk_live_1JDCsoADgv2TCwvpbUjPOeSLExPJKxg1uzTT9qWQjvjOYBb4TiEqnZI1Sd0Kz5WsJszMIXXcIMDwqQ2Rf5oOFQgD00YuWWyZWX
 
 key haye bala az proje haye githube
-
+https://github.com/adityash4rma/stripe-key-checker/blob/master/keys.txt
 https://github.com/gorankirovski/Phantom-Stripe/blob/main/KEY.txt
