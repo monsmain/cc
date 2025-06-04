@@ -21,7 +21,7 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-const githubDataURL = "https://raw.githubusercontent.com/monsmain/cc/main/deta.%20JSON"
+const githubDataURL = "https://raw.githubusercontent.com/monsmain/cc/main/deta.JSON"
 
 var countryMap map[string]string
 
