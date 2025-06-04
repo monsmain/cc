@@ -17,6 +17,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"math/rand"
 	"golang.org/x/net/proxy"
 )
 
@@ -112,9 +113,36 @@ func countryName(code string) string {
 	}
 	return code
 }
+
+
+func getRandomLiveKey(filename string) (string, error) {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", fmt.Errorf("could not read keys file: %v", err)
+	}
+	lines := strings.Split(string(content), "\n")
+	var keys []string
+	for _, line := range lines {
+		key := strings.TrimSpace(line)
+		if strings.HasPrefix(key, "sk_live_") && len(key) > 0 {
+			keys = append(keys, key)
+		}
+	}
+	if len(keys) == 0 {
+		return "", fmt.Errorf("no live keys found")
+	}
+	rand.Seed(time.Now().UnixNano())
+	return keys[rand.Intn(len(keys))], nil
+}
+
+
 func main() {
-	
-        sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
+
+	sk, err := getRandomLiveKey("keys.txt")
+	if err != nil {
+		fmt.Printf("خطا در خواندن کلید: %v\n", err)
+		return
+	}
 	
         reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
