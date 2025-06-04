@@ -250,6 +250,6 @@ fmt.Println(string(body1))
 			fmt.Println("Name: monsmain")
 		}
 	} else {
-		fmt.Println("Card info not available (token creation failed or invalid card).")
+		fmt.Println("Card info not available.")
 	}
 }
