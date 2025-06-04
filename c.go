@@ -7,18 +7,20 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
-	"regexp"
 	"golang.org/x/net/proxy"
-	"log"
 )
+
+const githubDataURL = "https://raw.githubusercontent.com/monsmain/cc/main/deta.%20JSON"
 
 var countryMap map[string]string
 
@@ -67,6 +69,28 @@ func isValidCVC(cvc string) bool {
 	return regexp.MustCompile(`^\d{3,4}$`).MatchString(cvc)
 }
 
+func downloadCountryDataIfNotExists(localFilename string) error {
+	if _, err := os.Stat(localFilename); err == nil {
+		// File exists
+		return nil
+	}
+	resp, err := http.Get(githubDataURL)
+	if err != nil {
+		return fmt.Errorf("failed to download data from GitHub: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("failed to download data from GitHub: status %v", resp.Status)
+	}
+	file, err := os.Create(localFilename)
+	if err != nil {
+		return fmt.Errorf("failed to create local file: %v", err)
+	}
+	defer file.Close()
+	_, err = io.Copy(file, resp.Body)
+	return err
+}
+
 func loadCountryMap(filename string) map[string]string {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -94,7 +118,11 @@ func countryName(code string) string {
 }
 
 func main() {
-	// لود کردن map کشورها از فایل JSON
+
+	err := downloadCountryDataIfNotExists("data.JSON")
+	if err != nil {
+		log.Fatalf("Could not prepare country data file: %v", err)
+	}
 	countryMap = loadCountryMap("data.JSON")
 
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
