@@ -21,7 +21,6 @@ import (
 )
 
 const githubDataURL = "https://raw.githubusercontent.com/monsmain/cc/main/deta.JSON"
-
 var countryMap map[string]string
 
 func clearTerminal() {
@@ -55,7 +54,6 @@ func getTorClient() *http.Client {
 		Timeout:   60 * time.Second,
 	}
 }
-
 func isValidCardNumber(number string) bool {
 	return regexp.MustCompile(`^\d{13,19}$`).MatchString(number)
 }
@@ -74,7 +72,6 @@ func downloadCountryDataIfNotExists(localFilename string) error {
 
 		return nil
 	}
-
 	resp, err := http.Get(githubDataURL)
 	if err != nil {
 		return fmt.Errorf("failed to download data from GitHub: %v", err)
@@ -91,7 +88,6 @@ func downloadCountryDataIfNotExists(localFilename string) error {
 	_, err = io.Copy(file, resp.Body)
 	return err
 }
-
 func loadCountryMap(filename string) map[string]string {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -110,23 +106,19 @@ func loadCountryMap(filename string) map[string]string {
 	}
 	return countries
 }
-
 func countryName(code string) string {
 	if name, ok := countryMap[code]; ok {
 		return name
 	}
 	return code
 }
-
 func main() {
 	err := downloadCountryDataIfNotExists("data.JSON")
 	if err != nil {
 		log.Fatalf("Could not prepare country data file: %v", err)
 	}
 	countryMap = loadCountryMap("data.JSON")
-
 	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
-
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("Enter card number (e.g. 4912461004526326): ")
@@ -136,7 +128,6 @@ func main() {
 		fmt.Println("Invalid card number format.")
 		return
 	}
-
 	fmt.Print("Enter card expiry month (e.g. 04): ")
 	expMonth, _ := reader.ReadString('\n')
 	expMonth = strings.TrimSpace(expMonth)
@@ -144,7 +135,6 @@ func main() {
 		fmt.Println("Invalid expiry month format.")
 		return
 	}
-
 	fmt.Print("Enter card expiry year (e.g. 2026): ")
 	expYear, _ := reader.ReadString('\n')
 	expYear = strings.TrimSpace(expYear)
@@ -152,7 +142,6 @@ func main() {
 		fmt.Println("Invalid expiry year format.")
 		return
 	}
-
 	fmt.Print("Enter card CVC (e.g. 011): ")
 	cvc, _ := reader.ReadString('\n')
 	cvc = strings.TrimSpace(cvc)
@@ -160,19 +149,16 @@ func main() {
 		fmt.Println("Invalid CVC format.")
 		return
 	}
-
 	client := getTorClient()
 	data := url.Values{}
 	data.Set("card[number]", cardNumber)
 	data.Set("card[exp_month]", expMonth)
 	data.Set("card[exp_year]", expYear)
 	data.Set("card[cvc]", cvc)
-
 	req1, _ := http.NewRequest("POST", "https://api.stripe.com/v1/tokens", strings.NewReader(data.Encode()))
 	req1.Header.Add("Authorization", "Bearer "+sk)
 	req1.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req1.Header.Set("User-Agent", "Mozilla/5.0 (compatible; SKChecker/1.0)")
-
 	resp1, err := client.Do(req1)
 	if err != nil {
 		fmt.Printf("Error in Stripe token request: %v\n", err)
@@ -180,7 +166,6 @@ func main() {
 	}
 	defer resp1.Body.Close()
 	body1, _ := io.ReadAll(resp1.Body)
-
 	type Card struct {
 		Brand   string `json:"brand"`
 		Country string `json:"country"`
@@ -194,7 +179,6 @@ func main() {
 	}
 	var tokenData TokenResponse
 	json.Unmarshal(body1, &tokenData)
-
 	req2, _ := http.NewRequest("GET", "https://api.stripe.com/v1/balance", nil)
 	req2.SetBasicAuth(sk, "")
 	resp2, err := client.Do(req2)
@@ -206,7 +190,6 @@ func main() {
 	body2, _ := io.ReadAll(resp2.Body)
 	balance := "N/A"
 	currency := "N/A"
-
 	var balanceJSON map[string]interface{}
 	if err := json.Unmarshal(body2, &balanceJSON); err == nil {
 		if available, ok := balanceJSON["available"].([]interface{}); ok && len(available) > 0 {
@@ -220,35 +203,33 @@ func main() {
 			}
 		}
 	}
-
 	resp1Str := string(body1)
 	switch {
 	case strings.Contains(resp1Str, "rate_limit"):
-		fmt.Printf("\n#RATE-LIMIT : %s\nRESPONSE:  RATE LIMIT⚠️\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\n#RATE-LIMIT\nRESPONSE:  RATE LIMIT⚠️\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
 	case strings.Contains(resp1Str, "tok_"):
-		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
 	case strings.Contains(resp1Str, "api_key_expired"):
-		fmt.Printf("\nDEAD : %s\nRESPONSE: API KEY REVOKED ❌\n", sk)
+		fmt.Printf("\nDEAD\nRESPONSE: API KEY REVOKED ❌\n")
 	case strings.Contains(resp1Str, "Invalid API Key provided"):
-		fmt.Printf("\nDEAD : %s\nRESPONSE: INVALID API KEY ❌\n", sk)
+		fmt.Printf("\nDEAD\nRESPONSE: INVALID API KEY ❌\n")
 	case strings.Contains(resp1Str, "testmode_charges_only"):
-		fmt.Printf("\nDEAD : %s\nRESPONSE: TESTMODE CHARGES ONLY ❌\n", sk)
+		fmt.Printf("\nDEAD\nRESPONSE: TESTMODE CHARGES ONLY ❌\n")
 	case strings.Contains(resp1Str, "Your card was declined"):
-		fmt.Printf("\n#LIVE : %s\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", sk, balance, currency)
+		fmt.Printf("\nStatus: Active✅\nBALANCE: %s\nCURRENCY: %s\n", balance, currency)
 	default:
-		fmt.Printf("\nDEAD: %s\nStatus: %s Declined❌\n", sk, tokenData.Message)
+		fmt.Printf("\nDEAD\nStatus: %s Declined❌\n", tokenData.Message)
 	}
 
-	fmt.Println("\n--- Card Info (from Stripe) ---")
 	if tokenData.Card != nil {
-		fmt.Printf("Type (brand): %s\n", tokenData.Card.Brand)
-		fmt.Printf("Country: %s\n", tokenData.Card.Country)
+		fmt.Printf("Type Card: %s\n", tokenData.Card.Brand)
+		fmt.Printf("Country: %s\n", countryName(tokenData.Card.Country))
 		if tokenData.Card.Name != "" {
 			fmt.Printf("Name: %s\n", tokenData.Card.Name)
 		} else {
-			fmt.Println("Name: (not provided)")
+			fmt.Println("Name: monsmain")
 		}
 	} else {
-		fmt.Println("Card info not available (token creation failed or invalid card).")
+		fmt.Println("Card info not available.")
 	}
 }
