@@ -119,7 +119,7 @@ func main() {
 	}
 	countryMap = loadCountryMap("data.JSON")
 
-	sk := "pk_test_TYooMQauvdEDq54NiTphI7jx"
+	sk := "sk_test_BQokikJOvBiI2HlWgH4olfQ2"
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("\033[H\033[2J")
