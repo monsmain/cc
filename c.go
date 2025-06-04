@@ -162,8 +162,6 @@ func main() {
 	default:
 		fmt.Printf("\nDEAD: %s\nStatus: %s Declined❌\n", sk, tokenData.Message)
 	}
-
-	fmt.Println("\n--- Card Info (from Stripe) ---")
 	if tokenData.Card != nil {
 		fmt.Printf("Type (brand): %s\n", tokenData.Card.Brand)
 		fmt.Printf("Country: %s\n", tokenData.Card.Country)
