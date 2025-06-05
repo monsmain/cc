@@ -34,7 +34,7 @@ func getTorClient() *http.Client {
 }
 
 func main() {
-	sk := "sk_live_51HDvx7FzTpur@qGSkOGDJz1GZpa6akGtPLuFXd8pg2uFew6dzCGrZ12YpyPVaF3mvFuycd341rCdmQ7Lm7Poyor200HwEh92ya"
+	sk := "sk_live_mW8KGJIEYIKJXvjqfaiuaBdHuy"
 
 	reader := bufio.NewReader(os.Stdin)
 
